@@ -4,8 +4,8 @@ import { ScraperController } from './scraper.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { FetchNewsFinvizHandler } from './handlers/fetch-news-finviz.handler';
 import { FetchInnerTextHandler } from './handlers/fetch-inner-text.handler';
-import { PlaywrightService } from './playwright-scraper.service';
-import { YahooFinanceScraperService } from './yahoo-finance-scraper.service';
+import { PlaywrightService } from './playwright-scraper.strategy';
+import { YahooFinanceScraperService } from './yahoo-finance-scraper.strategy';
 
 const QueryHandlers = [FetchNewsFinvizHandler, FetchInnerTextHandler];
 @Module({
