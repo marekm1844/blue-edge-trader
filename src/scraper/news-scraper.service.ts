@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
+import { News } from './news.type';
 
 @Injectable()
 export class ScraperService {
-  async scrape(symbol: string): Promise<string[]> {
+  async scrape(symbol: string): Promise<News[]> {
     const url = `https://finviz.com/quote.ashx?t=${symbol}&p=d`;
     const articles = [];
     let lastKnownDate = this.getCurrentDate();
@@ -25,11 +26,16 @@ export class ScraperService {
         const source = $(tdElements[1]).find('span').text().trim();
 
         if (dateTime.includes('-')) {
-          lastKnownDate = this.convertToDate(dateTime.split(' ')[0]);
+          // Split date and time, then process date
+          const [datePart, timePart] = dateTime.split(' ');
+          lastKnownDate = this.convertToDate(datePart);
+          dateTime = lastKnownDate + ' ' + timePart; // Use only the date part, ignore time
         } else if (dateTime.includes('Today')) {
-          dateTime = dateTime.replace('Today', lastKnownDate);
+          const timePart = dateTime.split(' ')[1];
+          dateTime = this.getCurrentDate() + ' ' + timePart; // Replace 'Today' with the current date
         } else {
-          dateTime = `${lastKnownDate} ${dateTime}`;
+          // If only time is present, use the last known date
+          dateTime = lastKnownDate + ' ' + dateTime;
         }
 
         if (title && link) {
@@ -44,13 +50,11 @@ export class ScraperService {
   }
 
   private getCurrentDate(): string {
-    const now = new Date();
-    return `${now.getFullYear()}${this.pad(now.getMonth() + 1)}${this.pad(
-      now.getDate(),
-    )}`;
+    return this.formatDate(new Date());
   }
 
   private convertToDate(dateStr: string): string {
+    const [month, day, year] = dateStr.split('-');
     const months = {
       Jan: '01',
       Feb: '02',
@@ -65,11 +69,14 @@ export class ScraperService {
       Nov: '11',
       Dec: '12',
     };
-    const parts = dateStr.split('-');
-    return `20${parts[2]}${months[parts[0]]}${this.pad(parseInt(parts[1]))}`;
+    const formattedDate = new Date(`20${year}-${months[month]}-${day}`);
+    return this.formatDate(formattedDate);
   }
 
-  private pad(num: number): string {
-    return num.toString().padStart(2, '0');
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}${month}${day}`;
   }
 }
