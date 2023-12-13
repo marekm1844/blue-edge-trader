@@ -1,2 +1,2 @@
 #Get links from scraped data
-GET http://localhost:3000/scraper/NFLX
+GET http://localhost:3001/scraper/NFLX

@@ -13,7 +13,9 @@ export class PlaywrightService implements IScraper {
     try {
       // Wait for the button to be available and click it
 
-      const innerText = await page.evaluate(() => document.body.innerText);
+      const innerText = await page.evaluate(() =>
+        document.body.innerText.trim(),
+      );
       return innerText;
     } catch (error) {
       console.error('Error clicking the button:', error);

@@ -25,6 +25,7 @@ export class ScraperService {
         const link = $(tdElements[1]).find('a.tab-link-news').attr('href');
         const source = $(tdElements[1]).find('span').text().trim();
 
+        //TODO: Check if date is in correct format Mon-DD-YY HH:MMAM/PM
         if (dateTime.includes('-')) {
           // Split date and time, then process date
           const [datePart, timePart] = dateTime.split(' ');
@@ -48,7 +49,7 @@ export class ScraperService {
 
     //return last 10 articles
     //TODO: DEBUG - remove slice
-    return articles.slice(0, 5);
+    return articles.slice(0, 10);
   }
 
   private getCurrentDate(): string {

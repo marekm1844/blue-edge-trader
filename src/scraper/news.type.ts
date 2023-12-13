@@ -9,7 +9,7 @@ export type News = {
 };
 
 export type NewsWithArticle = News & {
-  article: string;
+  innerText: string;
 };
 
 export type NewsWithArticleAndSummary = NewsWithArticle &

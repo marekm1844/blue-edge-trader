@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { NewsWithArticle, NewsWithArticleAndSummary } from './news.type';
@@ -33,11 +33,17 @@ export class ScraperController {
         fetchInnerTextPromises,
       );
 
+      //remove articles whren innerText containd "Continue reading"
+      const newsWithArticleFiltered = newsWithArticle.filter((article) => {
+        return !article.innerText.includes('Continue reading');
+      });
+
       const withSummary: NewsWithArticleAndSummary[] = [];
-      for (const article of newsWithArticle) {
+      for (const article of newsWithArticleFiltered) {
+        Logger.log(`Summarizing article: ${JSON.stringify(article)}`);
         const summary: z.infer<typeof NewsSummarySchema> =
           await this.commandBus.execute(
-            new SummarizeArticleCommand(article.article),
+            new SummarizeArticleCommand(article.innerText),
           );
         withSummary.push({ ...article, ...summary });
       }
