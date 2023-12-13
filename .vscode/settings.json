@@ -1,0 +1,6 @@
+{
+  "sonarlint.connectedMode.project": {
+    "connectionId": "marek-public-repos",
+    "projectKey": "marekm1844_blue-edge-trader"
+  }
+}

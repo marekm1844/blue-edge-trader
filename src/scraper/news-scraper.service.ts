@@ -46,7 +46,9 @@ export class ScraperService {
       Logger.error(err);
     }
 
-    return articles;
+    //return last 10 articles
+    //TODO: DEBUG - remove slice
+    return articles.slice(0, 5);
   }
 
   private getCurrentDate(): string {
