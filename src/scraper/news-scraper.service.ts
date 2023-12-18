@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { News } from './news.type';
+import * as moment from 'moment';
 
 @Injectable()
 export class ScraperService {
-  async scrape(symbol: string): Promise<News[]> {
+  async scrape(symbol: string, fromDateTime: string | null): Promise<News[]> {
     const url = `https://finviz.com/quote.ashx?t=${symbol}&p=d`;
     const articles = [];
     let lastKnownDate = this.getCurrentDate();
@@ -38,9 +39,19 @@ export class ScraperService {
           // If only time is present, use the last known date
           dateTime = lastKnownDate + ' ' + dateTime;
         }
+        Logger.debug(
+          `dateTime: ${dateTime} lastKnownDate: ${lastKnownDate} fromDateTime: ${fromDateTime}`,
+        );
 
-        if (title && link) {
-          articles.push({ date: dateTime, title, link, source });
+        if (
+          fromDateTime &&
+          moment(dateTime, 'YYYYMMDD hh:mmA').isAfter(
+            moment(fromDateTime, 'YYYYMMDD hh:mmA'),
+          )
+        ) {
+          if (title && link) {
+            articles.push({ date: dateTime, title, link, source, symbol });
+          }
         }
       });
     } catch (err) {
@@ -49,7 +60,7 @@ export class ScraperService {
 
     //return last 10 articles
     //TODO: DEBUG - remove slice
-    return articles.slice(0, 10);
+    return articles.slice(0, 5);
   }
 
   private getCurrentDate(): string {

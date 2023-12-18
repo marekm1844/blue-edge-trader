@@ -15,7 +15,7 @@ export const NewsSummarySchema = z.object({
       z
         .string()
         .describe(
-          'Summary point that will proovide specific data for the sentiment',
+          'Summary point that will provide specific data for the sentiment',
         ),
     )
     .min(3, 'At least 3 summary points required')

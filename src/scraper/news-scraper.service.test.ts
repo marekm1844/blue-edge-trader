@@ -36,7 +36,7 @@ describe('ScraperService', () => {
     });
 
     // Act
-    const result = await scraperService.scrape(symbol);
+    const result = await scraperService.scrape(symbol, null);
 
     // Assert
     expect(result).toEqual(expectedArticles);

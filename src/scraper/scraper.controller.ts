@@ -7,6 +7,8 @@ import { FetchInnerTextQuery } from './queries/fetch-inner-text.query';
 import { SummarizeArticleCommand } from 'src/summarizer/commands/summarize-article.command';
 import { NewsSummarySchema } from 'src/summarizer/article-summary.schema';
 import { z } from 'zod';
+import { SummarizeArticleSaveCommand } from 'src/summarizer/commands/summarize-save.command';
+import { GetLatestSavedSummaryQuery } from 'src/summarizer/queries/get-latest-saved-summary.query';
 
 @Controller('scraper')
 export class ScraperController {
@@ -18,8 +20,12 @@ export class ScraperController {
   @Get(':symbol')
   async scrape(@Param('symbol') symbol: string, @Res() res: Response) {
     try {
+      const latestSavedSummary: NewsWithArticleAndSummary =
+        await this.queryBus.execute(new GetLatestSavedSummaryQuery(symbol));
+
+      const dateSave = latestSavedSummary ? latestSavedSummary.date : null;
       const newsArticles = await this.queryBus.execute(
-        new FetchNewsFinvizQuery(symbol),
+        new FetchNewsFinvizQuery(symbol, dateSave),
       );
 
       // Use Promise.all to fetch innerText for all articles in parallel
@@ -46,6 +52,9 @@ export class ScraperController {
             new SummarizeArticleCommand(article.innerText),
           );
         withSummary.push({ ...article, ...summary });
+        await this.commandBus.execute(
+          new SummarizeArticleSaveCommand({ ...article, ...summary }),
+        );
       }
 
       return res.json(withSummary);

@@ -17,6 +17,6 @@ const QueryHandlers = [FetchNewsFinvizHandler, FetchInnerTextHandler];
     PlaywrightService,
     ...QueryHandlers,
   ],
-  exports: [ScraperService], // Export the service if it needs to be used outside this module
+  exports: [], // Export the service if it needs to be used outside this module
 })
 export class ScraperModule {}

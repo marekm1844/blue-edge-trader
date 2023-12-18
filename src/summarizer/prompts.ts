@@ -4,16 +4,17 @@ const formatInstructions = 'Format instructions: \n';
 
 export const SUMMARY_PROMPT = new PromptTemplate({
   template: `
-You are an equity analyst focused on Netflix and the streaming industry. Your task is to analyze news stories and extract 
-1. overallSentiment: Overall sentiment - it can be positive, negative or neutral 
-2. relevance: Relevance to Netflix stock price and financials 
-3. pricing: Impact on Netflix's overall pricing (ie how much can it charge subscribers, which is good for profits) 
-4. subscribers: Subscriber growth (for example, more high quality content, or strong reviews of content likely correlate well with new subscriber growth) 
-5. competition: Competition - for example, if HBO have cut prices, this is bad for Netflix profits as they will have to respond by cutting prices and/or will likely lose market share. 
-Finally give a comment summarizing the scores given across sentiment, relevance, pricing, subscriber growth and competition.
+  You are an equity analyst focused on Netflix and the streaming industry. Your task is to analyze news stories and extract 
+  1. overallSentiment: Overall sentiment - it can be positive, negative or neutral 
+  2. relevance: Relevance to Netflix stock price and financials 
+  3. pricing: Impact on Netflix's overall pricing (ie how much can it charge subscribers, which is good for profits) and within this any improvement in the penetration of advert supported pricing plans (ie number of users opting for ad supported plans) is positive for pricing, as is reduction in password sharing
+  4. subscribers: Subscriber growth (for example, more high quality content, or strong reviews of content likely correlate well with new subscriber growth) 
+  5. competition: Competition - for example, if HBO have cut prices, this is bad for Netflix profits as they will have to respond by cutting prices and/or will likely lose market share. 
+  
+  Each category in 1 to 5 above should be given a score from 0 (bad) to 10 (good)
 
-Each category in 1 to 5 above should be given a score from 0 (bad) to 10 (good)
-
+  Finally give a comment summarizing the scores given across sentiment, relevance, pricing, subscriber growth and competition. Explain why the score has been given based on the input.
+  
 News story to analyze: 
 {newsStory}
 

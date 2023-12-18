@@ -7,6 +7,6 @@ import { News } from '../news.type';
 export class FetchNewsFinvizHandler {
   constructor(private readonly scraperService: ScraperService) {}
   async execute(query: FetchNewsFinvizQuery): Promise<News[]> {
-    return this.scraperService.scrape(query.symbol);
+    return this.scraperService.scrape(query.symbol, query.fromDateTime);
   }
 }

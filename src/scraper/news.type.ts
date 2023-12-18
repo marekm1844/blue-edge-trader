@@ -6,6 +6,7 @@ export type News = {
   link: string;
   date: string;
   source: string;
+  symbol: string;
 };
 
 export type NewsWithArticle = News & {
