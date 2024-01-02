@@ -6,6 +6,13 @@ const ScoresSchema = z.object({
   pricing: z.number().min(0).max(10),
   subscribers: z.number().min(0).max(10),
   competition: z.number().min(0).max(10),
+  weight: z
+    .number()
+    .min(1)
+    .max(2)
+    .describe(
+      'When the article comment comes directly from company weight is 2 when its from journalist make it 1 ',
+    ),
 });
 
 export const NewsSummarySchema = z.object({

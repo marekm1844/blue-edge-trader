@@ -1,2 +1,6 @@
-#Get links from scraped data
-GET http://localhost:3001/scraper/NFLX
+### Get links from scraped data
+GET http://localhost:3001/scraper/NFLX HTTP/1.1
+
+
+### Get pricing data 
+GET http://localhost:3001/scraper/price/NFLX HTTP/1.1

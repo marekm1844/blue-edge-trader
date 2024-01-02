@@ -7,11 +7,14 @@ import { FirestoreSummaryRepository } from './repository/firestore-summary.repos
 import { SummarizeArticleSaveCommandHandler } from './handlers/summarize-save.handler';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GetLatestSavedSummaryHandler } from './handlers/get-latest-saved-summary.handler';
+import { FirestorePricingRepository } from './repository/firestore-pricing.repository';
+import { PricingSaveCommandHandler } from './handlers/pricing-save.handler';
 
 const commandHandlers = [
   SummarizeArticleCommandHandler,
   SummarizeArticleSaveCommandHandler,
   GetLatestSavedSummaryHandler,
+  PricingSaveCommandHandler,
 ];
 
 @Module({
@@ -30,7 +33,18 @@ const commandHandlers = [
       provide: 'ISummaryRepository',
       useClass: FirestoreSummaryRepository,
     },
+    {
+      provide: 'FIREBASE_PRICING_COLLECTION',
+      useFactory: (configService: ConfigService) =>
+        configService.get<string>('FIREBASE_PRICING_COLLECTION'),
+      inject: [ConfigService],
+    },
+    {
+      provide: 'IPricingRepository',
+      useClass: FirestorePricingRepository,
+    },
     FirestoreSummaryRepository,
+    FirestorePricingRepository,
   ],
   exports: [],
 })

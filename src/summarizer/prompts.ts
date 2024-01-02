@@ -14,7 +14,7 @@ export const SUMMARY_PROMPT = new PromptTemplate({
   Each category in 1 to 5 above should be given a score from 0 (bad) to 10 (good)
 
   Finally give a comment summarizing the scores given across sentiment, relevance, pricing, subscriber growth and competition. Explain why the score has been given based on the input.
-  
+
 News story to analyze: 
 {newsStory}
 
@@ -57,6 +57,22 @@ Here are some examples of how to summariz ans score the news story:
 ·       Comment: Low relevance as it pertains to technical problems at a competitor's service, not directly impacting Netflix.
 
 `,
+  inputVariables: ['newsStory'],
+  partialVariables: { formatInstructions },
+});
+
+export const ROLLUP_PROMPT = new PromptTemplate({
+  template: `
+
+  `,
+  inputVariables: ['newsStory'],
+  partialVariables: { formatInstructions },
+});
+
+export const Q_REPORT_ANALYSIS_PROMPT = new PromptTemplate({
+  template: `
+  
+    `,
   inputVariables: ['newsStory'],
   partialVariables: { formatInstructions },
 });
