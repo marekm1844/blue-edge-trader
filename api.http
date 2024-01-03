@@ -4,3 +4,6 @@ GET http://localhost:3001/scraper/NFLX HTTP/1.1
 
 ### Get pricing data 
 GET http://localhost:3001/scraper/price/NFLX HTTP/1.1
+
+### Get RSI data
+GET http://localhost:3001/technical/rsi?symbol=NFLX&interval=daily&timePeriod=20&seriesType=close HTTP/1.1
