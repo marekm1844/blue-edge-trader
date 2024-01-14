@@ -1,17 +1,22 @@
 import { z } from 'zod';
 
 const ScoresSchema = z.object({
-  overallSentiment: z.number().min(0).max(10), // assuming scores are from 0 to 10
+  overallSentimentScore: z.number().min(0).max(10), // assuming scores are from 0 to 10
   relevance: z.number().min(0).max(10),
   pricing: z.number().min(0).max(10),
   subscribers: z.number().min(0).max(10),
   competition: z.number().min(0).max(10),
-  weight: z
+  costs: z.number().min(0).max(10),
+  quality: z
     .number()
     .min(1)
-    .max(2)
+    .max(5)
     .describe(
-      'When the article comment comes directly from company weight is 2 when its from journalist make it 1 ',
+      `1) Company announcement = 5
+       2) Comments from management, for example at a conference = 4 
+       3) Comments from an investment bank broker report = 3 
+       4) high quality global journalism like the Wall St Journal or Financial Times = 2     
+       5) other news articles (eg Zacks, ZeroHedge, Benzinga) = 1`,
     ),
 });
 

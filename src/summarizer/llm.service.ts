@@ -41,12 +41,14 @@ export class GptSummaryService {
 
   async generateJsonSummary(
     articleText: string,
+    articleSource: string,
   ): Promise<(typeof NewsSummarySchema)['_type']> {
     const formatInstructions = this.parser.getFormatInstructions();
     SUMMARY_PROMPT.partialVariables = { formatInstructions };
 
     const finalPrompt = await SUMMARY_PROMPT.format({
       newsStory: articleText,
+      articleSource: articleSource,
     });
 
     const response = await this.openAI.call([new SystemMessage(finalPrompt)]);

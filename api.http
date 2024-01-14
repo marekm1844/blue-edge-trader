@@ -7,3 +7,17 @@ GET http://localhost:3001/scraper/price/NFLX HTTP/1.1
 
 ### Get RSI data
 GET http://localhost:3001/technical/rsi?symbol=NFLX&interval=daily&timePeriod=20&seriesType=close HTTP/1.1
+
+### Test connection to cosmos db
+GET http://localhost:3001/cosmos-test/test-connection HTTP/1.1
+
+### Test create index
+GET http://localhost:3001/cosmos-test/create-index HTTP/1.1
+
+### Search in Cosmos DB
+POST http://localhost:3001/cosmos-test/search HTTP/1.1
+Content-Type: application/json
+
+{
+  "query": "23 million monthly average users"
+}

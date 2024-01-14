@@ -12,6 +12,7 @@ import { GetLatestSavedSummaryQuery } from 'src/summarizer/queries/get-latest-sa
 import { FetchPricingQuery } from './queries/fetch-pricing.query';
 import { PricingSaveCommand } from 'src/summarizer/commands/pricing-save.command';
 import { PricingData } from './netflix-pricing.schema';
+import { SummarizeArticleSaveVectorCommand } from 'src/summarizer/commands/summarize-save-vector.comand';
 
 @Controller('scraper')
 export class ScraperController {
@@ -52,11 +53,14 @@ export class ScraperController {
         Logger.log(`Summarizing article: ${JSON.stringify(article)}`);
         const summary: z.infer<typeof NewsSummarySchema> =
           await this.commandBus.execute(
-            new SummarizeArticleCommand(article.innerText),
+            new SummarizeArticleCommand(article.innerText, article.source),
           );
         withSummary.push({ ...article, ...summary });
         await this.commandBus.execute(
           new SummarizeArticleSaveCommand({ ...article, ...summary }),
+        );
+        await this.commandBus.execute(
+          new SummarizeArticleSaveVectorCommand({ ...article, ...summary }),
         );
       }
 
