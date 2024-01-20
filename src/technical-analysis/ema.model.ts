@@ -5,7 +5,7 @@ export type ScoreValues = {
   subscribers: number;
   competition: number;
   costs: number;
-  quality: number;
+  quality?: number;
 };
 
 export type DailyStatistics = {
