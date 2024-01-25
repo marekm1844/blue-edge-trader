@@ -1,5 +1,5 @@
-import { CalculationResult } from '../../ema.model';
-import { ICalculation } from '../calculation.interface';
+import { CalculationResult } from '../ema.model';
+import { ICalculation } from './calculation.interface';
 
 export class CalculationContainer {
   private calculations: ICalculation[] = [];

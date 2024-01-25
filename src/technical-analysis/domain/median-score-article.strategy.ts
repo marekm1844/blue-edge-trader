@@ -1,4 +1,4 @@
-import { NewsWithArticleAndSummary } from '../../scraper/news.type';
+import { Logger } from '@nestjs/common';
 import { Score, ScoreValues } from '../ema.model';
 import { ICalculation } from './calculation.interface';
 
@@ -7,19 +7,10 @@ export class MedianScore implements ICalculation {
   private scoresArray: ScoreValues[];
   private date: Date;
 
-  constructor(articles: NewsWithArticleAndSummary[]) {
-    this.scoresArray = articles.map((article) => ({
-      overallSentimentScore: article.scores.overallSentimentScore ?? 0,
-      relevance: article.scores.relevance ?? 0,
-      pricing: article.scores.pricing ?? 0,
-      subscribers: article.scores.subscribers ?? 0,
-      competition: article.scores.competition ?? 0,
-      costs: article.scores.costs ?? 0,
-      quality: article.scores.quality ?? 0,
-    }));
-    this.date = new Date(articles[0].date);
+  constructor(scoresArray: ScoreValues[], date: Date) {
+    this.scoresArray = scoresArray;
+    this.date = date;
   }
-
   calculate(): void {
     this.result = {
       date: this.date,
@@ -35,6 +26,7 @@ export class MedianScore implements ICalculation {
         costs: this.weightedMedian(this.scoresArray, 'costs'),
       },
     };
+    Logger.debug(`Median score: ${JSON.stringify(this.result)}`);
   }
 
   private weightedMedian(scores: ScoreValues[], scoreType: keyof ScoreValues) {

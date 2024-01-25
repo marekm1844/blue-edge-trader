@@ -52,7 +52,7 @@ const commandHandlers = [
     CosmosVectorRepository,
   ],
   controllers: [CosmosTestController],
-  exports: [],
+  exports: [FirestoreClient],
 })
 export class SummarizerModule implements OnModuleInit {
   constructor(

@@ -6,14 +6,14 @@ export const SUMMARY_PROMPT = new PromptTemplate({
   template: `
   You are an equity analyst focused on Netflix and the streaming industry. Your task is to analyze news stories and extract 
   1. overallSentiment: Overall sentiment it can be positive, negative or neutral 
-  2. overallSentimentScore: Overall sentiment score (from 0 to 10)
-  3. relevance: Relevance to Netflix stock price and financials 
+  2. overallSentimentScore: Overall sentiment score (from 1 to 10)
+  3. relevance: Relevance to Netflix stock price and financials. If news story is about competition the revelance shoudd be 1 or 2. 
   4. pricing: Impact on Netflix's overall pricing (ie how much can it charge subscribers, which is good for profits) and within this any improvement in the penetration of advert supported pricing plans (ie number of users opting for ad supported plans) is positive for pricing, as is reduction in password sharing
   5. subscribers: Subscriber growth (for example, more high quality content, or strong reviews of content likely correlate well with new subscriber growth) 
   6. competition: Competition - for example, if HBO have cut prices, this is bad for Netflix profits as they will have to respond by cutting prices and/or will likely lose market share. 
   7. costs: for example are they cutting costs and as part of that are they cutting or increasing content spending?
   
-  Each category in 1 to 5 above should be given a score from 0 (bad) to 10 (good). Note that for costs, higher costs are bad.
+  Each category in 1 to 5 above should be given a score from 1 (bad) to 10 (excellent). Note that for costs, higher costs are bad.
 
   You also need to extract an Quality score using the following criteria:
 
@@ -29,8 +29,8 @@ Article source: {articleSource}
 News story to analyze: 
 {newsStory}
 
-From the provided news story pick information and data only relevant to Netflix and the streaming industry.
-If there are numbers in the news story, please include them in your summary.
+From the provided above news story pick information and data only relevant to Netflix and the streaming industry.
+If there are financial data,exact values or percentages, in the news story, please include them all in your summary.
 
 Analyze each story without looking at the other stories.
 

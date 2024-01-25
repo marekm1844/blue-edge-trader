@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 const ScoresSchema = z.object({
-  overallSentimentScore: z.number().min(0).max(10), // assuming scores are from 0 to 10
-  relevance: z.number().min(0).max(10),
-  pricing: z.number().min(0).max(10),
-  subscribers: z.number().min(0).max(10),
-  competition: z.number().min(0).max(10),
-  costs: z.number().min(0).max(10),
+  overallSentimentScore: z.number().min(1).max(10), // assuming scores are from 0 to 10
+  relevance: z.number().min(1).max(10),
+  pricing: z.number().min(1).max(10),
+  subscribers: z.number().min(1).max(10),
+  competition: z.number().min(1).max(10),
+  costs: z.number().min(1).max(10),
   quality: z
     .number()
     .min(1)
@@ -31,7 +31,9 @@ export const NewsSummarySchema = z.object({
         ),
     )
     .min(3, 'At least 3 summary points required')
-    .max(5, 'At most 5 summary points allowed'),
+    .describe('At least 3 summary points required')
+    .max(5, 'At most 10 summary points allowed')
+    .describe('At most 10 summary points allowed'),
   comment: z.string(),
   scores: ScoresSchema,
 });
