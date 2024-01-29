@@ -1,5 +1,5 @@
 export type ScoreValues = {
-  overallSentimentScore: number;
+  overallSentimentScore: number | null;
   relevance: number;
   pricing: number;
   subscribers: number;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as cheerio from 'cheerio';
 import { IScraper } from './scraper.interface';
 
@@ -20,8 +20,17 @@ export class YahooFinanceScraperService implements IScraper {
       }
 
       const response = await fetch(url);
+
+      // Check if the response is not found
+      if (response.status === 404) {
+        Logger.error(`Error 404 article: ${response.statusText}`);
+        return 'No News Found';
+      }
+
       if (!response.ok) {
-        throw new Error(`Error fetching article: ${response.statusText}`);
+        throw new Error(
+          `Error fetching article: ${response.statusText}, ${response.status}`,
+        );
       }
       const html = await response.text();
       const $ = cheerio.load(html);
@@ -36,7 +45,7 @@ export class YahooFinanceScraperService implements IScraper {
 
       return innerText.trim();
     } catch (error) {
-      console.error(`Error fetching article inner text: ${error.message}`);
+      console.debug(`Error fetching article url: ${url}`);
       throw new Error(`Error fetching article inner text: ${error.message}`);
     }
   }

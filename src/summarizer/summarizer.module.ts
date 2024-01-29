@@ -12,6 +12,7 @@ import { PricingSaveCommandHandler } from './handlers/pricing-save.handler';
 import { CosmosVectorRepository } from './repository/cosmos-vector.repository';
 import { CosmosTestController } from './test.controller';
 import { SummarizeArticleSaveVectorHandler } from './handlers/summarize-save-vector.handler';
+import { CloudeSummaryService } from './cloude-llm.service';
 
 const commandHandlers = [
   SummarizeArticleCommandHandler,
@@ -28,14 +29,19 @@ const commandHandlers = [
     GptSummaryService,
     ...commandHandlers,
     {
-      provide: 'FIREBASE_SUMMARY_COLLECTION',
-      useFactory: (configService: ConfigService) =>
-        configService.get<string>('FIREBASE_SUMMARY_COLLECTION'),
-      inject: [ConfigService],
-    },
-    {
       provide: 'ISummaryRepository',
       useClass: FirestoreSummaryRepository,
+    },
+    {
+      provide: 'ISummaryService',
+      useFactory: (configService: ConfigService) => {
+        const modelType = configService.get<string>('SUMMARY_MODEL');
+        if (modelType === 'CLOUDE') {
+          return new CloudeSummaryService(configService);
+        }
+        return new GptSummaryService(configService);
+      },
+      inject: [ConfigService],
     },
     {
       provide: 'FIREBASE_PRICING_COLLECTION',

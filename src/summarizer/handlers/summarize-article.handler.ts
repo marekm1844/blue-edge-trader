@@ -2,25 +2,42 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SummarizeArticleCommand } from '../commands/summarize-article.command';
 import { NewsSummarySchema } from '../article-summary.schema';
 import { GptSummaryService } from '../llm.service';
+import ISummaryService from '../summary-service.interface';
+import { CloudeSummaryService } from '../cloude-llm.service';
+import { Inject } from '@nestjs/common';
 
 @CommandHandler(SummarizeArticleCommand)
 export class SummarizeArticleCommandHandler
   implements ICommandHandler<SummarizeArticleCommand>
 {
-  constructor(private readonly summarizeArticleService: GptSummaryService) {}
+  constructor(
+    @Inject('ISummaryService')
+    private readonly summarizeArticleService: ISummaryService,
+  ) {}
 
   async execute(
     command: SummarizeArticleCommand,
   ): Promise<(typeof NewsSummarySchema)['_type']> {
     let articleText = command.articleText;
-    if (command.articleText.length > 11070)
-      articleText = command.articleText.slice(0, 11070);
+    let result = null;
 
-    const result = await this.summarizeArticleService.generateJsonSummary(
-      articleText,
-      // Get just the first 100 characters of the article source for source quality check
-      command.articleSource.slice(0, 100),
-    );
+    if (this.summarizeArticleService instanceof GptSummaryService) {
+      if (command.articleText.length > 11070)
+        articleText = command.articleText.slice(0, 11070);
+
+      result = await this.summarizeArticleService.generateJsonSummary(
+        articleText,
+        // Get just the first 100 characters of the article source for source quality check
+        command.articleSource.slice(0, 100),
+      );
+    }
+    if (this.summarizeArticleService instanceof CloudeSummaryService) {
+      result = await this.summarizeArticleService.generateJsonSummary(
+        articleText,
+        // Get just the first 100 characters of the article source for source quality check
+        command.articleSource,
+      );
+    }
 
     /**
       //TODO: Replace timeout with Finetunning LLM to reduce prompt length

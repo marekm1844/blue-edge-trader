@@ -7,8 +7,9 @@ import { FirestoreTechnicalAnalysisRepository } from './repository/firestore-tec
 import { CreateDailyRollupHandler } from './handlers/create-daily-rollup.handler';
 import { CqrsModule } from '@nestjs/cqrs';
 import { FirestoreDailyTechnicalRepository } from './repository/daily-technical.repository';
+import { DailyMedianFinishedHandler } from './handlers/daily-median-finished.handler';
 
-const commandHandlers = [CreateDailyRollupHandler];
+const commandHandlers = [CreateDailyRollupHandler, DailyMedianFinishedHandler];
 @Module({
   imports: [CqrsModule, SummarizerModule],
   controllers: [TechnicalAnalysisController],

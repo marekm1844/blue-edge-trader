@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Param, Res } from '@nestjs/common';
+import { Controller, Get, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { NewsWithArticle, NewsWithArticleAndSummary } from './news.type';
@@ -33,11 +33,17 @@ export class ScraperController {
       );
 
       // Use Promise.all to fetch innerText for all articles in parallel
-      const fetchInnerTextPromises = newsArticles.map((article) =>
-        this.queryBus
-          .execute(new FetchInnerTextQuery(article.link))
-          .then((innerText) => ({ ...article, innerText })),
-      );
+      const fetchInnerTextPromises = newsArticles
+        .map(async (article) => {
+          const innerText = await this.queryBus.execute(
+            new FetchInnerTextQuery(article.link),
+          );
+          if (!innerText) {
+            return null; // Skip to next article
+          }
+          return { ...article, innerText };
+        })
+        .filter(Boolean); // Filter out null values
 
       const newsWithArticle: NewsWithArticle[] = await Promise.all(
         fetchInnerTextPromises,
@@ -50,7 +56,6 @@ export class ScraperController {
 
       const withSummary: NewsWithArticleAndSummary[] = [];
       for (const article of newsWithArticleFiltered) {
-        Logger.log(`Summarizing article: ${JSON.stringify(article)}`);
         const summary: z.infer<typeof NewsSummarySchema> =
           await this.commandBus.execute(
             new SummarizeArticleCommand(article.innerText, article.source),

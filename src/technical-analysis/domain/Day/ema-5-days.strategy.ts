@@ -23,10 +23,13 @@ export class Ema5DaysStrategy implements ICalculation {
     if (!this.scores) {
       throw new Error('Need 5 days of articles to calculate EMA');
     }
-    const dates = this.inputScores.map((score) => score.date);
+    const filteredScores = this.inputScores.filter(
+      (score) => !isNaN(score.scores.overallSentimentScore),
+    );
+    const dates = filteredScores.map((score) => score.date);
     const latestDate = max(dates);
     const fiveDayEmaScores = EmaCalculation.calculateEmaScores(
-      this.inputScores.map((score) => score.scores),
+      filteredScores.map((score) => score.scores),
       5,
     );
 

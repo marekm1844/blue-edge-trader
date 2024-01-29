@@ -44,10 +44,11 @@ export class ScraperService {
         );
 
         if (
-          fromDateTime &&
-          moment(dateTime, 'YYYYMMDD hh:mmA').isAfter(
-            moment(fromDateTime, 'YYYYMMDD hh:mmA'),
-          )
+          (fromDateTime &&
+            moment(dateTime, 'YYYYMMDD hh:mmA').isAfter(
+              moment(fromDateTime, 'YYYYMMDD hh:mmA'),
+            )) ||
+          !fromDateTime
         ) {
           if (title && link) {
             articles.push({ date: dateTime, title, link, source, symbol });

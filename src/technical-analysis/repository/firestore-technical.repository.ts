@@ -43,6 +43,13 @@ export class FirestoreTechnicalAnalysisRepository {
     }
 
     Logger.log(`Found ${snapshot.size} summaries for date: ${dateStr}`);
+    Logger.debug('======================================');
+    Logger.debug(
+      `[FirestoreTechnicalAnalysisRepository] snapshot.docs: ${JSON.stringify(
+        snapshot.docs.map((doc) => doc.data().date),
+      )}`,
+    );
+
     return snapshot.docs.map((doc) => {
       const data = doc.data() as NewsWithArticleAndSummary;
       return {

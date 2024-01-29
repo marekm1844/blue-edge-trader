@@ -1,26 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatOpenAI } from 'langchain/chat_models/openai';
-import {
-  OutputFixingParser,
-  StructuredOutputParser,
-} from 'langchain/output_parsers';
+import { ChatAnthropic } from '@langchain/anthropic';
+import { StructuredOutputParser } from 'langchain/output_parsers';
 import { ZodType } from 'zod';
 import { NewsSummarySchema } from './article-summary.schema';
-import { SUMMARY_PROMPT } from './prompts';
-import { SystemMessage } from 'langchain/schema';
+import { CLOUDE_SUMMARY_PROMPT } from './prompts';
+import { BasePromptValue } from 'langchain/schema';
 import ISummaryService from './summary-service.interface';
 
 @Injectable()
-export class GptSummaryService implements ISummaryService {
-  private readonly openAI: ChatOpenAI;
+export class CloudeSummaryService implements ISummaryService {
+  private readonly ai: ChatAnthropic;
   private readonly parser: StructuredOutputParser<ZodType>;
 
   constructor(private configService: ConfigService) {
-    this.openAI = new ChatOpenAI({
+    this.ai = new ChatAnthropic({
       temperature: 0.2,
-      openAIApiKey: this.configService.get<string>('OPENAI_API_KEY'),
-      modelName: 'gpt-4-1106-preview',
+      anthropicApiKey: this.configService.get<string>('ANTHROPIC_API_KEY'),
+      modelName: 'claude-2.1',
+      maxTokens: 2000,
     });
 
     this.parser = StructuredOutputParser.fromZodSchema(NewsSummarySchema);
@@ -33,8 +31,8 @@ export class GptSummaryService implements ISummaryService {
     try {
       parsedOutput = await this.parser.parse(output);
     } catch (error) {
-      const fixParser = OutputFixingParser.fromLLM(this.openAI, this.parser);
-      parsedOutput = await fixParser.parse(output);
+      Logger.error(`[CloudeSummaryService] Error parsing output: ${error}`);
+      throw error;
     }
 
     return NewsSummarySchema.parse(parsedOutput);
@@ -45,14 +43,15 @@ export class GptSummaryService implements ISummaryService {
     articleSource: string,
   ): Promise<(typeof NewsSummarySchema)['_type']> {
     const formatInstructions = this.parser.getFormatInstructions();
-    SUMMARY_PROMPT.partialVariables = { formatInstructions };
+    CLOUDE_SUMMARY_PROMPT.partialVariables = { formatInstructions };
 
-    const finalPrompt = await SUMMARY_PROMPT.format({
+    const finalPrompt = await CLOUDE_SUMMARY_PROMPT.format({
       newsStory: articleText,
       articleSource: articleSource,
     });
 
-    const response = await this.openAI.call([new SystemMessage(finalPrompt)]);
+    Logger.debug(`Final prompt: ${finalPrompt}`);
+    const response = await this.ai.invoke(['system', finalPrompt]);
     const output = await this.pareseOutput(response.content.toString());
 
     Logger.log(`Generated summary: ${JSON.stringify(output)}`);
