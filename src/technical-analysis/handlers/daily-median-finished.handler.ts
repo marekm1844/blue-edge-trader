@@ -3,7 +3,7 @@ import { DailyMedianFinishedEvent } from '../events/daily-median-finished.event'
 import { Logger } from '@nestjs/common';
 import { FirestoreDailyTechnicalRepository } from '../repository/daily-technical.repository';
 import { CalculationContainer } from '../domain/calculation-container.service';
-import { add, sub } from 'date-fns';
+import { add } from 'date-fns';
 import { Ema5DaysStrategy } from '../domain/Day/ema-5-days.strategy';
 import { CalculationResult } from '../ema.model';
 import { ZScore10DaysStrategy } from '../domain/Day/z-score-10-days.strategy';
@@ -17,11 +17,11 @@ export class DailyMedianFinishedHandler
     const calculationContainer = new CalculationContainer();
     // INFO: Need to add 1 day becuuse the datetime is like YYYY-MM-DDT00:00:00.000Z and we need to include the current day
     const toDate = add(event.data.date, { days: 1 });
-    const fromDate = sub(event.data.date, { days: 8 });
+    //const fromDate = sub(event.data.date, { days: 8 });
     try {
-      const fiveDaysData = await this.dailyRepo.getScoresForDateRange(
+      const fiveDaysData = await this.dailyRepo.getScoresForLastXDaysWithData(
         event.symbol,
-        fromDate,
+        10,
         toDate,
       );
 
