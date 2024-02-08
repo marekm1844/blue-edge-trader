@@ -38,13 +38,15 @@ export class FirestoreSummaryRepository implements ISummaryRepository {
     }
   }
 
-  async save(summary: NewsWithArticleAndSummary) {
+  async save(summary: NewsWithArticleAndSummary): Promise<string> {
     this.getCollection();
     const date = moment(summary.date.trim(), 'YYYYMMDD hh:mmA').toDate();
     const dateWithoutSpaces = date.toISOString();
-    await this.collection
-      .doc(dateWithoutSpaces + '|' + summary.symbol + '|' + randomUUID())
-      .set(summary, { merge: true });
+    const documentId =
+      dateWithoutSpaces + '|' + summary.symbol + '|' + randomUUID();
+    await this.collection.doc(documentId).set(summary, { merge: true });
+
+    return documentId;
   }
 
   async getLatestSavedSummary(

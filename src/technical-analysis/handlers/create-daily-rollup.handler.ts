@@ -39,6 +39,11 @@ export class CreateDailyRollupHandler
     calculationContainer.executeCalculations();
     const scores = calculationContainer.getResults();
 
+    if (
+      scores.some((result) => isNaN(result.result.scores.overallSentimentScore))
+    ) {
+      return;
+    }
     try {
       await this.dailyRepo.saveCalculationResults(command.input.symbol, scores);
       const event = new DailyMedianFinishedEvent(

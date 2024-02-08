@@ -74,14 +74,15 @@ export class FirestoreDailyTechnicalRepository {
   }
 
   // Main function to get scores within the last X days with data
+  //INFO: Can be optimized to avoid multiple queries like get scores for the last likr 180 days and then filter the last 10 days
   async getScoresForLastXDaysWithData(
     symbol: string,
     days: number,
     to: Date = new Date(),
   ): Promise<CalculationResult[]> {
     let from = subDays(to, days - 1); // Start date adjusted to get the desired number of days
-    let foundDays = 0; // Counter for found days with data
-    let attempts = 0; // Counter to avoid infinite loops
+    let foundDays = 0;
+    let attempts = 0;
 
     while (foundDays < days && attempts < 365) {
       // Safeguard with max attempts
