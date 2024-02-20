@@ -13,6 +13,7 @@ import { CosmosVectorRepository } from './repository/cosmos-vector.repository';
 import { CosmosTestController } from './test.controller';
 import { SummarizeArticleSaveVectorHandler } from './handlers/summarize-save-vector.handler';
 import { CloudeSummaryService } from './cloude-llm.service';
+import { CreateDailySummaryHandler } from './handlers/create-daily-summary.handler';
 
 const commandHandlers = [
   SummarizeArticleCommandHandler,
@@ -20,6 +21,7 @@ const commandHandlers = [
   GetLatestSavedSummaryHandler,
   PricingSaveCommandHandler,
   SummarizeArticleSaveVectorHandler,
+  CreateDailySummaryHandler,
 ];
 
 @Module({

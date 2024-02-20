@@ -5,6 +5,7 @@ import { NewsWithArticleAndSummary } from 'src/scraper/news.type';
 import { randomUUID } from 'crypto';
 import * as moment from 'moment';
 import { ConfigService } from '@nestjs/config';
+import { startOfDay, addDays, endOfDay, format, parse } from 'date-fns';
 
 @Injectable()
 export class FirestoreSummaryRepository implements ISummaryRepository {
@@ -65,5 +66,39 @@ export class FirestoreSummaryRepository implements ISummaryRepository {
 
     const doc = snapshot.docs[0];
     return doc.data() as NewsWithArticleAndSummary;
+  }
+
+  async getArticlesForDay(
+    dateStr: string,
+    symbol: string,
+  ): Promise<NewsWithArticleAndSummary[]> {
+    this.getCollection();
+
+    const date = parse(dateStr, 'yyyyMMdd', new Date());
+    const start = format(startOfDay(date), 'yyyyMMdd');
+    const end = format(addDays(endOfDay(date), 1), 'yyyyMMdd');
+
+    const snapshot = await this.collection
+      .where('symbol', '==', symbol)
+      .where('date', '>=', start)
+      .where('date', '<=', end)
+      .get();
+
+    if (snapshot.empty) {
+      return [];
+    }
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      // Extract only the required fields
+      const { title, articleSummary, comment, sentiment, scores } = data;
+      return {
+        title,
+        articleSummary,
+        comment,
+        sentiment,
+        scores,
+      } as NewsWithArticleAndSummary; // Type casting for clarity
+    });
   }
 }

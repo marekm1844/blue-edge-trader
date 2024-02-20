@@ -37,3 +37,13 @@ export const NewsSummarySchema = z.object({
   comment: z.string(),
   scores: ScoresSchema,
 });
+
+export const DailySummarySchema = z.object({
+  summary: z
+    .array(z.string().describe('Summary point for the day'))
+    .min(3)
+    .describe('At least 3 summary points')
+    .max(5)
+    .describe('At most 5 summary points allowed'),
+  comment: z.string(),
+});

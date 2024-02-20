@@ -3,10 +3,11 @@ import { CreateDailyRollupCommand } from '../commands/create-daily-rollup.comman
 import { FirestoreTechnicalAnalysisRepository } from '../repository/firestore-technical.repository';
 import { CalculationContainer } from '../domain/calculation-container.service';
 import { parse } from 'date-fns';
-import { MedianScore } from '../domain/median-score-article.strategy';
 import { Logger } from '@nestjs/common';
 import { FirestoreDailyTechnicalRepository } from '../repository/daily-technical.repository';
-import { DailyMedianFinishedEvent } from '../events/daily-median-finished.event';
+import { MeanScore } from '../domain/mean-score-article.strategy';
+import { DailyMeanFinishedEvent } from '../events/daily-mean-finished.event';
+import { CreateDailySummary } from '../events/create-daily-summary.event';
 
 @CommandHandler(CreateDailyRollupCommand)
 export class CreateDailyRollupHandler
@@ -30,7 +31,7 @@ export class CreateDailyRollupHandler
       const timeZoneOffset = date.getTimezoneOffset() * 60000;
       const utcDate = new Date(date.getTime() - timeZoneOffset);
 
-      calculationContainer.add(new MedianScore(dailyData, utcDate));
+      calculationContainer.add(new MeanScore(dailyData, utcDate));
     } catch (error) {
       console.error('Error fetching data from specific date:', error);
       throw error;
@@ -46,15 +47,18 @@ export class CreateDailyRollupHandler
     }
     try {
       await this.dailyRepo.saveCalculationResults(command.input.symbol, scores);
-      const event = new DailyMedianFinishedEvent(
+      const event = new DailyMeanFinishedEvent(
         command.input.symbol,
-        scores.find((result) => result.type === 'MedianScore').result,
+        scores.find((result) => result.type === 'MeanScore').result,
       );
 
       Logger.debug(
         `[CreateDailyRollupHandler] Event: ${JSON.stringify(event)}`,
       );
       this.eventBus.publish(event);
+      this.eventBus.publish(
+        new CreateDailySummary(command.input.symbol, event.data.date),
+      );
     } catch (err) {
       Logger.error(
         `[CreateDailyRollupHandler] Error saving scores: ${err.message}`,

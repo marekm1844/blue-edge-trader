@@ -30,7 +30,7 @@ export class ArticleSummaryFinishedHandler
       Logger.debug(
         `[ArticleSummaryFinishedHandler] Day data: ${JSON.stringify(
           tenDaysData
-            .filter((data) => data.type === 'MedianScore')
+            .filter((data) => data.type === 'MeanScore')
             .map((data) => data.result.date),
         )}`,
       );
@@ -39,7 +39,7 @@ export class ArticleSummaryFinishedHandler
         new ZScore10DaysStrategy(
           event.data,
           tenDaysData
-            .filter((data) => data.type === 'MedianScore')
+            .filter((data) => data.type === 'MeanScore')
             .flatMap((data) => data.result),
         ),
       );

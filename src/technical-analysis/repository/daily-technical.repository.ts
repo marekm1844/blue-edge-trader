@@ -141,4 +141,28 @@ export class FirestoreDailyTechnicalRepository {
     Logger.debug('Unable to find enough data within the last year.');
     return [];
   }
+
+  /**
+   * Updates articles by adding or updating a specified field based on document IDs.
+   *
+   * @param documentIds -  document IDs to update.
+   * @param fieldName - The name of the field to add or update.
+   * @param fieldValue - The value to set for the field.
+   */
+  async updateFieldsById(
+    documentIds: string,
+    fieldName: string,
+    fieldValue: any,
+  ): Promise<void> {
+    const docRef = this.collection.doc(documentIds);
+    const docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      Logger.error(`Document with ID ${documentIds} not found`);
+      throw new Error(`Document with ID ${documentIds} not found`);
+    }
+
+    const updateObject = { [fieldName]: fieldValue };
+    await docRef.update(updateObject);
+  }
 }

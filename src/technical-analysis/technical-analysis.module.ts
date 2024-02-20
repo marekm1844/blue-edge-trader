@@ -9,11 +9,15 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { FirestoreDailyTechnicalRepository } from './repository/daily-technical.repository';
 import { DailyMedianFinishedHandler } from './handlers/daily-median-finished.handler';
 import { ArticleSummaryFinishedHandler } from './handlers/article-summary-finished.handler';
+import { DailyMeanFinishedHandler } from './handlers/daily-mean-finished.handler';
+import { DailySummaryFinishedHandler } from './handlers/daily-summary-finished.event';
 
 const commandHandlers = [
   CreateDailyRollupHandler,
   DailyMedianFinishedHandler,
   ArticleSummaryFinishedHandler,
+  DailyMeanFinishedHandler,
+  DailySummaryFinishedHandler,
 ];
 @Module({
   imports: [CqrsModule, SummarizerModule],
